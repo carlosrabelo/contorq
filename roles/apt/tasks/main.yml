@@ -1,0 +1,11 @@
+---
+- apt:
+    upgrade: dist
+    update_cache: yes
+
+- apt:
+    pkg:
+      - dos2unix
+      - gpg
+      - vim
+    state: present

@@ -1,0 +1,32 @@
+---
+- ansible.builtin.apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    keyring: /usr/share/keyrings/kubernetes-archive-keyring.gpg
+    state: present
+
+- ansible.builtin.apt_repository:
+    repo: deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main
+    filename: kubernetes
+    state: present
+
+- ansible.builtin.apt:
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - software-properties-common
+      - kubectl
+      - kubelet
+      - kubeadm
+    state: present
+    update_cache: true
+
+- ansible.builtin.copy:
+    src: kubernetes-cri.txt
+    dest: /etc/sysctl.d/99-kubernetes-cri.conf
+    owner: root
+    group: root
+    mode: '0644'
+  register: result
+
+- shell: sysctl --system
+  when: result.changed

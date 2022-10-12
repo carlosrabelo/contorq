@@ -1,0 +1,29 @@
+---
+- ansible.builtin.copy:
+    src: hosts.txt
+    dest: /etc/hosts
+    owner: root
+    group: root
+    mode: '0644'
+
+- ansible.builtin.copy:
+    src: vimrc.txt
+    dest: /root/.vimrc
+    owner: root
+    group: root
+    mode: '0644'
+
+- ansible.builtin.file:
+    path: /root/.ssh
+    state: directory
+
+- ansible.builtin.copy:
+    src: config.txt
+    dest: /root/.ssh/config
+    owner: root
+    group: root
+    mode: '0644'
+
+- shell: swapoff -a
+
+- shell: sed -i 's/^\(.*vg-swap.*\)/#\1/' /etc/fstab

@@ -1,0 +1,44 @@
+---
+- ansible.builtin.apt_key:
+    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+    url: https://download.docker.com/linux/debian/gpg
+    keyring: /usr/share/keyrings/docker-archive-keyring.gpg
+    state: present
+
+- ansible.builtin.apt_repository:
+    repo: deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bullseye stable
+    filename: docker
+    state: present
+
+- ansible.builtin.apt:
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - software-properties-common
+      - docker-ce
+    state: present
+    update_cache: true
+
+- ansible.builtin.copy:
+    src: daemon.txt
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: '0644'
+
+- ansible.builtin.copy:
+    src: containerd.txt
+    dest: /etc/modules-load.d/containerd.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- ansible.builtin.file:
+    path: /etc/containerd
+    state: directory
+
+- shell: containerd config default | sed 's/^\([[:space:]]*SystemdCgroup = \).*/\1true/' | tee /etc/containerd/config.toml
+
+- ansible.builtin.service:
+    name: docker
+    state: restarted

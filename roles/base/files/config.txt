@@ -1,0 +1,3 @@
+Host s2-*
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
